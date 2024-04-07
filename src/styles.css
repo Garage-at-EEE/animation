@@ -1,0 +1,72 @@
+body{
+    margin: 0;
+}
+
+.nav {
+    position: fixed; /* Position the navbar fixed to the top */
+    top: 0; /* Align to the top of the page */
+    left: 0; /* Align to the left of the page */
+    right: 0; /* Stretch across the entire top */
+    background-color: #040720; /* White background */
+    z-index: 1000; /* Ensure it's above other content */
+    padding: 0.5rem 1rem; /* Add some padding */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds shadow for depth */
+    /* Rest of your styles */
+}
+
+
+.site-title{
+    font-size:2rem;
+}
+.nav ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    display: flex;
+    align-items:center;
+    padding: .25rem;
+
+}
+
+.nav a{
+    color: #fff;
+    text-decoration: none;
+    height: 100%;
+
+}
+
+.nav li.active {
+    background-color: #555;
+}
+
+.nav li:hover {
+    background-color: #777;
+    border-radius: 5px;
+    padding: 0.6rem 1.0rem;
+}
+
+.card {
+    width: 50vw;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0px 10px 10px 10px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #333;
+  }
+  
+  .card:nth-child(odd) {
+    align-self: flex-end;
+    background-color: #120443;
+  }
+  
+  .card-text {
+    font-size: 28px;
+    color: #fff;
+  }

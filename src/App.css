@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #040720;
 }
 
 .App-logo {
@@ -14,7 +15,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #040720;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -36,3 +37,45 @@
     transform: rotate(360deg);
   }
 }
+
+.mb-3{
+  width: "80%";
+  height: "60%";
+  background-color: #040720 !important;
+  border: none !important;
+}
+
+.points-text {
+  color: #fff; /* Change text color to white */
+  font-size: 1.5rem; /* Increase the font size */
+  font-weight: bold; /* Optional: Makes the text bold */
+}
+
+.Form {
+  color: #fff; /* Change text color to white */
+  font-size: 1.5rem; /* Increase the font size */
+  font-weight: bold; /* Optional: Makes the text bold */
+}
+
+/* In your CSS file */
+.main-content {
+  margin-top: 60px; /* Adjust this value based on the actual height of your navbar */
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0; /* Don't allow the image to shrink */
+}
+
+.flex-grow-1 {
+  flex-grow: 1; /* Allow the text section to grow */
+}
+
+/* Adjustments for responsiveness */
+@media (max-width: 768px) {
+  .flex-shrink-0,
+  .flex-grow-1 {
+    flex: 0 0 100%; /* Make both take full width on smaller screens */
+    max-width: 100%; /* Prevent any exceeding of the width */
+  }
+}
+
