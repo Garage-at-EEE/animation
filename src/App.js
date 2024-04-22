@@ -11,8 +11,7 @@ import Profile from './Profile';
 import "./index.css";
 import Navbar from './Navbar';
 import { motion } from "framer-motion";
-
-
+import FollowUs from './FollowUs';
 
 // Then use Zoom in your Animator component
 
@@ -142,6 +141,7 @@ function App() {
             </ScrollContainer>
             </div>  
           } />
+              <Route path="/follow-us" element={<FollowUs />} />
               <Route path="/Profile" element={<Profile />} />
             </Routes>
  

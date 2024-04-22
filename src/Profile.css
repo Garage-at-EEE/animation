@@ -1,70 +1,180 @@
-/* Style the name card */
-.name-card {
-  background-color: white; /* Set background to white */
-  padding: 1rem; /* Add some padding around the content */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05); /* Add a slight shadow for depth */
-  border-radius: 0.25rem; /* Round the corners of the card */
-  margin-bottom: 2rem; /* Add some space between the card and the table */
-  text-align: center; /* Center the text inside the card */
-}
-
-/* Style the points display */
-.points-display {
-  font-size: 1.2rem; /* Increase font size for visibility */
-  font-weight: 500; /* Make the font a bit bolder */
-  color: #333; /* Set a darker color for contrast */
-  margin-top: 0.5rem; /* Add space above the points display */
-}
-
-/* Improve the table appearance */
-.mdb-table {
-  margin-top: 2rem; /* Add space between the name card and the table */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05); /* Apply the same shadow as the name card */
-  border-collapse: separate; /* Ensure that borders are separate */
-  border-spacing: 0; /* Remove default border spacing */
-}
-
-.mdb-table th,
-.mdb-table td {
-  border: 1px solid #dee2e6; /* Add borders to table cells for definition */
-}
-
-/* Enhance the table header */
-.mdb-table thead th {
-  background-color: #f8f9fa; /* A light grey background */
-  color: #333; /* Darker text for contrast */
-}
-
-/* Ensure the table body matches the aesthetic */
-.mdb-table tbody tr {
-  background-color: white; /* White background for table rows */
-}
-
-.mdb-table tbody tr:nth-of-type(odd) {
-  background-color: #f8f9fa; /* Slightly different background for odd rows */
-}
-
-/* Style the redeem buttons for a cleaner look */
-.mdb-table .btn {
-  padding: 0.375rem 0.75rem;
-  color: white; /* White text on the buttons */
-  background-color: #007bff; /* A blue background for the buttons */
-  border-color: #007bff; /* Matching border color */
-  margin-right: 0.5rem; /* Add some spacing to the right of buttons */
-}
-
-/* Center the container of the profile card and table */
+/* Adjust padding for the profile container for a tighter layout */
 .profile-container {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  align-items: center; /* Center children horizontally */
-  justify-content: center; /* Center children vertically */
-  min-height: 100vh;
-  padding: 2rem; /* Add padding around the content */
+  padding: 5rem; /* Reduced from 10rem to something smaller */
 }
 
-.table-responsive {
-  width: 100%;
-  max-width: 600px; /* Adjust the width as necessary */
-  overflow-x: auto;
+/* Table header adjustments for a cleaner look */
+.profile-container .mdb-table thead th {
+  background-color: #4E5D6C; /* Maintain the dark header */
+  color: #FFFFFF;
+  border-bottom: 2px solid #707070;
+  text-align: center; /* Center align header text */
+  font-size: 1.2rem;
 }
+
+/* Align the checkbox to the center */
+.profile-container .mdb-table tbody td {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 2rem; /* Larger font size for body content */
+}
+/* Adjust the width of the image column to make it smaller */
+.profile-container .mdb-table tbody td:nth-child(2) {
+  max-width: 120px; /* Adjust the max width as needed */
+  overflow: hidden; /* Hide overflow */
+  white-space: nowrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; /* Add ellipsis if text is too long */
+}
+/* Styling the checkbox directly for better control */
+/* Ensure checkboxes are centered in the cell */
+.profile-container .mdb-table tbody td input[type="checkbox"] {
+  display: block;
+  margin: 0 auto;
+}
+
+.profile-container .mdb-table tbody img {
+  width: 300px !important; 
+  height: auto !important;
+}
+
+.profile-container .mdb-table thead th:last-child,
+.profile-container .mdb-table tbody td:last-child {
+  width: 150px; /* Adjust the width as needed */
+}
+/* Table column widths */
+.profile-container .mdb-table th:nth-child(1), /* Adjust based on the index of your image column */
+.profile-container .mdb-table td:nth-child(1) {
+  width: 300px; /* Make sure this matches or exceeds the width of your images */
+}
+
+.profile-container .mdb-table tbody tr:nth-child(odd) {
+  background-color: #F5F5F5; /* Lighter shade for alternating rows */
+}
+
+/* Custom checkbox styling */
+.profile-container .checkbox-container input:checked ~ .checkmark {
+  background-color: #4E5D6C; /* Match header color */
+}
+
+/* Button styling */
+.profile-container .btn-purchase {
+  background-color: #4E5D6C; /* Match header color */
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.profile-container .btn-purchase:hover {
+  background-color: #6C7D90; /* Lighter shade for hover */
+}
+
+/* Home button container fixed at the bottom */
+.home-button-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+/* Loading container styling */
+.loading-container {
+  color: #4E5D6C; /* Match the color theme */
+  font-weight: bold;
+}
+
+/* Backdrop for the modal */
+.purchase-summary-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to be on top of other content */
+}
+
+/* Modal styling */
+.purchase-summary-modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1001; /* Ensure the modal is above the backdrop */
+  width: 90%;
+  max-width: 500px; /* Adjust as necessary */
+  animation: modalAppear 0.3s ease-out forwards;
+}
+
+@keyframes modalAppear {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal header */
+.purchase-summary-modal h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+/* List of items in the modal */
+.purchase-summary-modal ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.purchase-summary-modal li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Total cost display */
+.summary-total {
+  margin-top: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Buttons in the modal */
+.purchase-summary-modal button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.purchase-summary-modal button.confirm {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.purchase-summary-modal button.confirm:hover {
+  background-color: #45A049;
+}
+
+.purchase-summary-modal button.cancel {
+  background-color: #f44336;
+  color: white;
+  margin-left: 0.5rem;
+}
+
+.purchase-summary-modal button.cancel:hover {
+  background-color: #D32F2F;
+}
+
