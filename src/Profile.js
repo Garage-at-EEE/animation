@@ -135,27 +135,27 @@ function Profile() {
         //   }
         // );
 
-        const response = await fetch(
+        const response = await axios.post(
           "https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec",
+          {
+            matric: "u2020912L",
+            passcode: "2901",
+            type: "purchase",
+            item: [
+              {
+                itemName: "Stickers",
+                quantity: 3,
+              },
+              {
+                itemName: "Shirts",
+                quantity: 1,
+              },
+            ],
+          },
           {
             redirect: "follow",
             mode: "cors",
             method: "POST",
-            body: JSON.stringify({
-              matric: "u2020912L",
-              passcode: "2901",
-              type: "purchase",
-              item: [
-                {
-                  itemName: "Stickers",
-                  quantity: 3,
-                },
-                {
-                  itemName: "Shirts",
-                  quantity: 1,
-                },
-              ],
-            }),
             headers: {
               "Content-Type": "text/plain;charset=utf-8",
             },
