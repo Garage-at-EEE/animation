@@ -12,6 +12,7 @@ import "./index.css";
 import Navbar from './Navbar';
 import { motion } from "framer-motion";
 import FollowUs from './FollowUs';
+import axios from "axios";
 
 // Then use Zoom in your Animator component
 
@@ -24,6 +25,11 @@ function App() {
   const [logoScale, setLogoScale] = useState(1);
   const [contentOpacity, setContentOpacity] = useState(1);
   const [cardPosition, setCardPosition] = useState(0);
+  const [matric, setMatric] = useState('');
+  const [passcode, setPasscode] = useState('');
+  const [points, setPoints] = useState(0); // Points should be a number
+  const [isLoading, setIsLoading] = useState(false); // To track loading state
+  
 
   const handleScroll = () => {
     const position = window.pageYOffset;
@@ -45,9 +51,36 @@ function App() {
     };
   }, []); // Correctly closes useEffect call
 
-  const handleLogin = () => {
-    navigate('/Profile'); // Navigate to Profile page
+  const handleLogin = async () => {
+    setIsLoading(true);
+  
+    const config = {
+      redirect: "follow",
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+    };
+  
+    console.log(`Attempting to log in with matric: ${matric} and passcode: ${passcode}`);
+    try {
+      const response = await axios.post('https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec', {
+        matric: matric,
+        passcode: passcode,
+        type: "userdata"
+      }, config);
+  
+      // ... rest of your existing code
+    } catch (error) {
+      console.error("Error logging in: ", error);
+      // Maybe set an error message in state and display it
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
+ 
 
     return (
       <div className="App">
@@ -111,18 +144,27 @@ function App() {
                 <Animator animation={ZoomInScrollOut}>                
                   <Form className="Form">
                       <Row>
-                      <Col md>
-                          <Form.Group controlId="formEmail">
-                              <Form.Label>Matric Number</Form.Label>
-                              <Form.Control type="email" placeholder="eg. U123456789A" />
-                          </Form.Group>
-                      </Col>
-                      <Col md>
-                          <Form.Group controlId="formPassword">
-                              <Form.Label>Day of Birth</Form.Label>
-                              <Form.Control type="password" placeholder="MMDD" />
-                          </Form.Group>
-                      </Col>
+                      <Form.Group controlId="formEmail">
+                      <Form.Label>Matric Number</Form.Label>
+                      <Form.Control
+                        type="text" // this should probably be type="text" instead of type="email"
+                        placeholder="eg. U123456789A"
+                        value={matric}
+                        onChange={(e) => setMatric(e.target.value)}
+                      />
+                    </Form.Group>
+                    <Col md>
+                      <Form.Group controlId="formPassword">
+                        <Form.Label>Day of Birth</Form.Label>
+                        <Form.Control
+                          type="password" // or type="text" if it's not sensitive information
+                          placeholder="DDMM"
+                          value={passcode}
+                          onChange={(e) => setPasscode(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+
                       </Row>
 
                       <Row>

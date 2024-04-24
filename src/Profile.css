@@ -178,3 +178,27 @@
   background-color: #D32F2F;
 }
 
+/* Profile.css */
+.quantity-input-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.quantity-input {
+  text-align: center;
+  width: 50px; /* Set a fixed width */
+  margin: 0 5px;
+  border: 1px solid #ced4da; /* Match Bootstrap's default styling */
+  border-radius: 0.25rem; /* Match Bootstrap's default styling */
+}
+
+.increment-decrement-btn {
+  background: #f8f9fa; /* Match Bootstrap's default button color */
+  border: 1px solid #ced4da; /* Match Bootstrap's default border */
+  color: #495057; /* Match Bootstrap's default text color */
+  padding: 5px;
+  border-radius: 0.25rem; /* Match Bootstrap's default styling */
+  cursor: pointer; /* To indicate the buttons are clickable */
+}

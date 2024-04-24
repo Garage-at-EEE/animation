@@ -13,8 +13,8 @@ import "./Profile.css";
 function Profile() {
   // ... other state variables
   const [items, setItems] = useState([]);
-  const [points, setPoints] = useState(100); // Actual points the user has
-  const [tentativePoints, setTentativePoints] = useState(100); // Tentative points based on selection
+  const [points, setPoints] = useState([]);
+  const [tentativePoints, setTentativePoints] = useState([]);
   const [rewards, setRewards] = useState([]);
   const [selectedRewards, setSelectedRewards] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -53,52 +53,53 @@ function Profile() {
     }
   };
 
-  const handleCheckboxChange = (uniqueKey, isSelected) => {
-    const price = rewards.find(
-      (reward) => reward.uniqueKey === uniqueKey
-    ).innocreditPrice;
-
+  const handleQuantityChange = (uniqueKey, quantity) => {
+    quantity = Number(quantity); // Convert to number to ensure calculations are correct
+  
+    // Update the selected rewards with the new quantity
     setSelectedRewards((prevSelectedRewards) => {
       const newSelectedRewards = {
         ...prevSelectedRewards,
-        [uniqueKey]: isSelected,
+        [uniqueKey]: quantity,
       };
-
-      // Update tentative points based on the new selection state
-      setTentativePoints((currentPoints) => {
-        const selectedItems = rewards.filter(
-          (reward) => newSelectedRewards[reward.uniqueKey]
-        );
-        const totalCost = selectedItems.reduce(
-          (acc, item) => acc + item.innocreditPrice,
-          0
-        );
-        return points - totalCost;
-      });
-
+  
+      // Calculate the new total cost immediately using the updated rewards state
+      const newTotalCost = rewards.reduce((totalCost, reward) => {
+        const rewardQuantity = newSelectedRewards[reward.uniqueKey] || 0;
+        return totalCost + rewardQuantity * reward.innocreditPrice;
+      }, 0);
+  
+      // Update the tentative points based on the new total cost
+      setTentativePoints(points - newTotalCost);
+  
       return newSelectedRewards;
     });
   };
+  
+  
+const handlePurchase = () => {
+  // Gather selected items with their quantities
+  const selectedItems = rewards.map((item) => ({
+    ...item,
+    quantity: selectedRewards[item.uniqueKey] || 0
+  })).filter((item) => item.quantity > 0);
+  
+  // Calculate the total cost, considering the quantity
+  const totalCost = selectedItems.reduce((acc, item) => {
+    return acc + (item.quantity * item.innocreditPrice);
+  }, 0);
 
-  const handlePurchase = () => {
-    // Gather selected items
-    const selectedItems = rewards.filter(
-      (reward) => selectedRewards[reward.uniqueKey]
-    );
-    const totalCost = selectedItems.reduce(
-      (acc, item) => acc + item.innocreditPrice,
-      0
-    );
+  // Check if we have enough points
+  if (points >= totalCost) {
+    // Here you should set summaryItems to include the quantity as well
+    setSummaryItems(selectedItems);
+    // Show the summary modal
+    setShowSummary(true);
+  } else {
+    alert("You do not have enough points for this purchase.");
+  }
+};
 
-    if (tentativePoints >= totalCost) {
-      // Prepare a summary of the selected items
-      setSummaryItems(selectedItems);
-      // Show the summary to the user for confirmation
-      setShowSummary(true);
-    } else {
-      alert("You do not have enough points for this purchase.");
-    }
-  };
 
   const goHome = () => {
     navigate("/");
@@ -123,24 +124,13 @@ function Profile() {
       }));
 
       try {
-        // TODO: Replace 'your_endpoint' with the actual endpoint provided by your backend
-        // const response = await axios.post(
-        //   "https://script.google.com/macros/s/AKfycbyR7JnRDjBZ67VCHSWgu1zWDbF95cajKGWmEjXLRf92ST8Mcv22naqUTuXDRTk3JGzD/exec",
-        //   payload,
-        //   {
-        //     mode: "no-cors",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //   }
-        // );
 
         const response = await axios.post(
           "https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec",
           {
-            matric: "u2020912L",
-            passcode: "2901",
-            type: "purchase",
+            matric: "",
+            passcode: "",
+            type: "userdata",
             item: [
               {
                 itemName: "Stickers",
@@ -233,24 +223,18 @@ function Profile() {
               {rewards.map((reward) => (
                 <tr key={reward.uniqueKey}>
                   <td>
-                    <img
-                      src={
-                        reward.image.preview_url || reward.image.download_url
-                      }
-                      alt={reward.itemName}
-                      style={{ width: "50px", height: "auto" }} // Adjust size as needed
-                    />
+                    <img src={reward.image.preview_url} alt={reward.itemName} />
                   </td>
                   <td>{reward.itemName}</td>
                   <td>{reward.innocreditPrice}</td>
                   <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedRewards[reward.uniqueKey]}
-                      onChange={(e) =>
-                        handleCheckboxChange(reward.uniqueKey, e.target.checked)
-                      }
-                    />
+                  <input
+                    type="number"
+                    className="quantity-input"
+                    min="0"
+                    value={selectedRewards[reward.uniqueKey] || 0}
+                    onChange={(e) => handleQuantityChange(reward.uniqueKey, e.target.value)}
+                  />
                   </td>
                 </tr>
               ))}
