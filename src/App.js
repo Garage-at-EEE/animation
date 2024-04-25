@@ -29,8 +29,13 @@ function App() {
   const [passcode, setPasscode] = useState('');
   const [points, setPoints] = useState(0); // Points should be a number
   const [isLoading, setIsLoading] = useState(false); // To track loading state
-  
+  const [loginError, setLoginError] = useState('');
 
+
+  const resetLoading = () => {
+    setIsLoading(false);
+  };
+  
   const handleScroll = () => {
     const position = window.pageYOffset;
     const newScale = Math.max(0.5, 1 - position / 500); // Adjust the denominator for speed
@@ -53,8 +58,12 @@ function App() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-  
+    setLoginError('');
+
     const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
       redirect: "follow",
       mode: "cors",
       method: "POST",
@@ -64,6 +73,7 @@ function App() {
     };
   
     console.log(`Attempting to log in with matric: ${matric} and passcode: ${passcode}`);
+   
     try {
       const response = await axios.post('https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec', {
         matric: matric,
@@ -71,11 +81,22 @@ function App() {
         type: "userdata"
       }, config);
   
+      console.log('Response:', response); // Debugging line to see what's returned from the backend
+  
+      // Check for successful login response
+      if (response.data.status === "DATA RETRIEVAL SUCCESSFUL") {
+        // If the data retrieval is successful, navigate to the Profile page
+        navigate('/Profile', { state: { user: response.data.info, points: response.data.info.currentInnocredit } });
+      } else {
+        // Handle unsuccessful login
+        setLoginError("Wrong username or passcode.")
+      }
       // ... rest of your existing code
     } catch (error) {
       console.error("Error logging in: ", error);
+      setLoginError("An Error occured. Please try again.")
       // Maybe set an error message in state and display it
-    } finally {
+    } finally{
       setIsLoading(false);
     }
   };
@@ -133,14 +154,7 @@ function App() {
               </Animator>
             </ScrollPage>
 
-            <ScrollPage page={1}>
-              <Animator animation={ZoomInScrollOut}>
-                <Rewards />
-              </Animator>
-            </ScrollPage>   
-
-
-              <ScrollPage page={2}>
+              <ScrollPage page={1}>
                 <Animator animation={ZoomInScrollOut}>                
                   <Form className="Form">
                       <Row>
@@ -168,12 +182,21 @@ function App() {
                       </Row>
 
                       <Row>
-                        <Col>                               
+                      <Col>
                         <Button variant="secondary" onClick={handleLogin} style={{ color: 'white' }}> 
-                        Login 
+                          {isLoading ? (
+                            <div className="loading-spinner"></div>
+                          ) : (
+                            "Login"
+                          )}
                         </Button>
-                        </Col>
-                      </Row>
+                        {/* Display error message if login fails */}
+                        {loginError && (
+                          <div style={{ color: 'red', marginTop: '10px' }}>{loginError}</div>
+                        )}
+                      </Col>
+                    </Row>
+
                                             
                   </Form>
                 </Animator>
@@ -184,7 +207,7 @@ function App() {
             </div>  
           } />
               <Route path="/follow-us" element={<FollowUs />} />
-              <Route path="/Profile" element={<Profile />} />
+              <Route path="/Profile" element={<Profile resetLoading={resetLoading} />} />
             </Routes>
  
         </div>  

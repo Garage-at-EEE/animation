@@ -81,9 +81,31 @@
 
 /* Loading container styling */
 .loading-container {
+  display: flex; /* Enable flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically if desired */
+  min-height: 100vh; /* Ensure it takes at least the full viewport height */
   color: #4E5D6C; /* Match the color theme */
   font-weight: bold;
 }
+
+/* If you want to center it vertically as well, you can adjust the margin-top property */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #09f;
+
+  animation: spin 1s infinite linear;
+}
+
+/* You may also want to adjust the loading text to be in line with the spinner */
+.loading-container > div {
+  display: flex;
+  align-items: center;
+}
+
 
 /* Backdrop for the modal */
 .purchase-summary-backdrop {
@@ -202,3 +224,15 @@
   border-radius: 0.25rem; /* Match Bootstrap's default styling */
   cursor: pointer; /* To indicate the buttons are clickable */
 }
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+

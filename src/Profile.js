@@ -6,15 +6,14 @@ import {
   MDBTableHead,
   MDBBtn,
 } from "mdb-react-ui-kit";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Profile.css";
 
-function Profile() {
-  // ... other state variables
+function Profile({resetLoading}) {
   const [items, setItems] = useState([]);
-  const [points, setPoints] = useState([]);
-  const [tentativePoints, setTentativePoints] = useState([]);
+  const [points, setPoints] = useState(0);
+  const [tentativePoints, setTentativePoints] = useState(0);
   const [rewards, setRewards] = useState([]);
   const [selectedRewards, setSelectedRewards] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -22,11 +21,41 @@ function Profile() {
   const [summaryItems, setSummaryItems] = useState([]);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const user = location.state?.user; // Access user data passed in the state
+  const pointsFromLogin = location.state?.points; 
+
+  const updatePointsFromState = () => {
+    console.log('Updating points from state:', location.state);
+    const userPoints = location.state?.user?.currentInnocredits;
+    if (userPoints) {
+      const numericPoints = Number(userPoints);
+      setPoints(numericPoints);
+      setTentativePoints(numericPoints);
+    } else {
+      console.error('Points not found in the state, defaulting to 0.');
+      // You could choose to navigate away or leave this as a non-fatal error.
+    }
+  };
 
   useEffect(() => {
+    console.log('location.state on mount:', location.state);
+    if (location.state && location.state.user) {
+      const userPoints = Number(location.state.user.currentInnocredit);
+      if (!isNaN(userPoints)) {
+        setPoints(userPoints);
+        setTentativePoints(userPoints);
+      } else {
+        console.error('Invalid points value received from login state.');
+      }
+    } else {
+      console.error('Invalid or missing state. Points cannot be set.');
+    }
     fetchData();
-  }, []);
-
+    // Since fetchData is a dependency and it's defined outside of useEffect, you should either move its definition inside of useEffect or wrap it in a useCallback hook
+  }, [location.state]); // Depend on location.state to ensure this runs when it updates
+  
+  
   const fetchData = async () => {
     const endpointURL =
       "https://script.google.com/macros/s/AKfycbzFKN07XS2IozAXsaZzCugG72jh2NSwfou9fKAfEV3FOiYBHS13qkb_QlWq6ZC7OqL3/exec";
@@ -77,33 +106,42 @@ function Profile() {
   };
   
   
-const handlePurchase = () => {
-  // Gather selected items with their quantities
-  const selectedItems = rewards.map((item) => ({
-    ...item,
-    quantity: selectedRewards[item.uniqueKey] || 0
-  })).filter((item) => item.quantity > 0);
+  const handlePurchase = async () => {
+    // Gather selected items with their quantities
+    const selectedItems = rewards.map((item) => ({
+      ...item,
+      quantity: selectedRewards[item.uniqueKey] || 0
+    })).filter((item) => item.quantity > 0);
   
-  // Calculate the total cost, considering the quantity
-  const totalCost = selectedItems.reduce((acc, item) => {
-    return acc + (item.quantity * item.innocreditPrice);
-  }, 0);
+    // Calculate the total cost, considering the quantity
+    const totalCost = selectedItems.reduce((acc, item) => {
+      return acc + (item.quantity * item.innocreditPrice);
+    }, 0);
+  
+    console.log('Current points:', points);
+    console.log('Total cost:', totalCost);
+    // Check if we have enough points
+    if (points >= totalCost) {
+      // Here you should set summaryItems to include the quantity as well
+      setSummaryItems(selectedItems);
+  
+      // Deduct points for the tentative state, don't update the actual points yet
+      setTentativePoints(points - totalCost);
+  
+      // Show the summary modal
+      setShowSummary(true);
+    } else {
+      alert("You do not have enough points for this purchase.");
+    }
+  };
+  
+  
 
-  // Check if we have enough points
-  if (points >= totalCost) {
-    // Here you should set summaryItems to include the quantity as well
-    setSummaryItems(selectedItems);
-    // Show the summary modal
-    setShowSummary(true);
-  } else {
-    alert("You do not have enough points for this purchase.");
-  }
+const goHome = () => {
+  resetLoading(); // Reset the loading state
+  navigate("/");
 };
 
-
-  const goHome = () => {
-    navigate("/");
-  };
 
   const finalizePurchase = async () => {
     // Gather selected items
@@ -114,7 +152,12 @@ const handlePurchase = () => {
       (acc, item) => acc + item.innocreditPrice,
       0
     );
-
+    const payload = summaryItems.map((item) => ({
+      id: item.id,
+      itemName: item.itemName,
+      quantity: item.quantity,
+    }));
+    console.log('Tentative points before purchase:', tentativePoints);
     if (tentativePoints >= totalCost) {
       // Prepare the payload with the selected items for the POST request
       const payload = selectedItems.map((item) => ({
@@ -155,8 +198,23 @@ const handlePurchase = () => {
         // Check the response status and perform actions accordingly
         if (response.status === 200) {
           console.log("Purchase successful:", response.data);
+  
           // Deduct points permanently on confirmed purchase
           setPoints(tentativePoints);
+  
+          // Update user's totalSpending
+          const updatedTotalSpending = user.totalSpending + totalCost;
+  
+          // Update user's currentInnocredit
+          user.currentInnocredit = tentativePoints; // or use setPoints value
+  
+          // Call your API endpoint to update user's totalSpending and currentInnocredit
+          await axios.post('https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec', {
+            matricNumber: user.matricNumber,
+            currentInnocredit: user.currentInnocredit,
+            totalSpending: updatedTotalSpending,
+          });
+  
           setSelectedRewards({}); // Reset the selection after purchase
           setShowSummary(false); // Close the summary view
           setSummaryItems([]); // Clear the summary items
@@ -182,72 +240,76 @@ const handlePurchase = () => {
             <ul>
               {summaryItems.map((item) => (
                 <li key={item.uniqueKey}>
-                  {item.itemName} - {item.innocreditPrice} points
+                  {item.itemName} x {item.quantity} - {item.quantity * item.innocreditPrice} points
                 </li>
               ))}
             </ul>
+
             <div className="summary-total">
               Total:{" "}
               {summaryItems.reduce(
-                (acc, item) => acc + item.innocreditPrice,
+                (acc, item) => acc + (item.quantity * item.innocreditPrice),
                 0
               )}{" "}
               points
             </div>
+
             <button onClick={finalizePurchase}>Confirm Purchase</button>
             <button onClick={() => setShowSummary(false)}>Cancel</button>
           </div>
         </div>
       )}
       {isLoading ? (
-        <div className="loading-container">Loading...</div>
-      ) : (
-        <MDBContainer
-          className="profile-container table-responsive"
-          style={{ color: "white" }}
-        >
-          {/* Assume points is a number */}
-          <h3>Profile's Points: {tentativePoints}</h3>
-          <MDBTable className="mdb-table">
-            <MDBTableHead>
-              <tr>
-                <th style={{ textAlign: "center" }}>Image</th>
-                <th style={{ textAlign: "center" }}>Reward</th>
-                <th style={{ textAlign: "center" }}>Cost (Points)</th>
-                <th style={{ textAlign: "center" }}>Select</th>{" "}
-                {/* Align the header for checkboxes */}
-              </tr>
-            </MDBTableHead>
+  <div className="loading-container">
+    <div className="spinner"></div>
+    <h1>Loading...</h1>
+  </div>
+) : (
+  <MDBContainer
+    className="profile-container table-responsive"
+    style={{ color: "white" }}
+  >
+    <h3>Profile's Points: {tentativePoints}</h3>
+    <MDBTable className="mdb-table">
+      <MDBTableHead>
+        <tr>
+          <th style={{ textAlign: "center" }}>Image</th>
+          <th style={{ textAlign: "center" }}>Reward</th>
+          <th style={{ textAlign: "center" }}>Cost (Points)</th>
+          <th style={{ textAlign: "center" }}>Select</th> {/* Align the header for checkboxes */}
+        </tr>
+      </MDBTableHead>
+      <MDBTableBody>
+        {rewards.map((reward) => (
+          <tr key={reward.uniqueKey}>
+            <td>
+              <img src={reward.image.preview_url} alt={reward.itemName} />
+            </td>
+            <td>{reward.itemName}</td>
+            <td>{reward.innocreditPrice}</td>
+            <td>
+              <input
+                type="number"
+                className="quantity-input"
+                min="0"
+                value={selectedRewards[reward.uniqueKey] || 0}
+                onChange={(e) => handleQuantityChange(reward.uniqueKey, e.target.value)}
+              />
+            </td>
+          </tr>
+        ))}
+      </MDBTableBody>
+        </MDBTable>
+        <div className="home-button-container">
+          <MDBBtn onClick={goHome}>Back Home</MDBBtn>
+          <MDBBtn onClick={handlePurchase}>Purchase</MDBBtn>
+        </div>
+      </MDBContainer>
+    )}
 
-            <MDBTableBody>
-              {rewards.map((reward) => (
-                <tr key={reward.uniqueKey}>
-                  <td>
-                    <img src={reward.image.preview_url} alt={reward.itemName} />
-                  </td>
-                  <td>{reward.itemName}</td>
-                  <td>{reward.innocreditPrice}</td>
-                  <td>
-                  <input
-                    type="number"
-                    className="quantity-input"
-                    min="0"
-                    value={selectedRewards[reward.uniqueKey] || 0}
-                    onChange={(e) => handleQuantityChange(reward.uniqueKey, e.target.value)}
-                  />
-                  </td>
-                </tr>
-              ))}
-            </MDBTableBody>
-          </MDBTable>
-          <div className="home-button-container">
-            <MDBBtn onClick={goHome}>Back Home</MDBBtn>
-            <MDBBtn onClick={handlePurchase}>Purchase</MDBBtn>
-          </div>
-        </MDBContainer>
-      )}
     </>
   );
 }
+
 
 export default Profile;
