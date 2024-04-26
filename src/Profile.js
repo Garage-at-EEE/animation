@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   MDBContainer,
   MDBTable,
@@ -55,10 +55,9 @@ function Profile({resetLoading}) {
     // Since fetchData is a dependency and it's defined outside of useEffect, you should either move its definition inside of useEffect or wrap it in a useCallback hook
   }, [location.state]); // Depend on location.state to ensure this runs when it updates
   
-  
   const fetchData = async () => {
     const endpointURL =
-      "https://script.google.com/macros/s/AKfycbzFKN07XS2IozAXsaZzCugG72jh2NSwfou9fKAfEV3FOiYBHS13qkb_QlWq6ZC7OqL3/exec";
+      "https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec";
     setIsLoading(true);
     try {
       const response = await axios.get(endpointURL);
@@ -106,9 +105,9 @@ function Profile({resetLoading}) {
   };
   
   
-  const handlePurchase = async () => {
+  const handlePurchase = useCallback (() => {
     // Gather selected items with their quantities
-    const selectedItems = rewards.map((item) => ({
+     const selectedItems = rewards.map((item) => ({
       ...item,
       quantity: selectedRewards[item.uniqueKey] || 0
     })).filter((item) => item.quantity > 0);
@@ -118,10 +117,12 @@ function Profile({resetLoading}) {
       return acc + (item.quantity * item.innocreditPrice);
     }, 0);
   
-    console.log('Current points:', points);
-    console.log('Total cost:', totalCost);
+    console.log(`Available points: ${points}`);
+    console.log(`Tentative points before purchase: ${tentativePoints}`);
+    console.log(`Total cost of selected items: ${totalCost}`);
+    
     // Check if we have enough points
-    if (points >= totalCost) {
+    if (tentativePoints >= totalCost) {
       // Here you should set summaryItems to include the quantity as well
       setSummaryItems(selectedItems);
   
@@ -133,7 +134,7 @@ function Profile({resetLoading}) {
     } else {
       alert("You do not have enough points for this purchase.");
     }
-  };
+  },[points, selectedRewards, rewards]);
   
   
 
@@ -145,52 +146,38 @@ const goHome = () => {
 
   const finalizePurchase = async () => {
     // Gather selected items
+    
     const selectedItems = rewards.filter(
       (reward) => selectedRewards[reward.uniqueKey]
     );
-    const totalCost = selectedItems.reduce(
-      (acc, item) => acc + item.innocreditPrice,
-      0
-    );
-    const payload = summaryItems.map((item) => ({
-      id: item.id,
-      itemName: item.itemName,
-      quantity: item.quantity,
-    }));
+    const totalCost = selectedItems.reduce((acc, item) => {
+      return acc + item.innocreditPrice * (selectedRewards[item.uniqueKey] || 0);
+    }, 0);
+
     console.log('Tentative points before purchase:', tentativePoints);
+
     if (tentativePoints >= totalCost) {
-      // Prepare the payload with the selected items for the POST request
-      const payload = selectedItems.map((item) => ({
-        id: item.uniqueKey,
-        itemName: item.itemName,
-        cost: item.innocreditPrice,
-      }));
 
       try {
-
+        // Use the correct variable name: selectedRewards (with capital R) and item (not iteam)
         const response = await axios.post(
           "https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec",
           {
-            matric: "",
-            passcode: "",
-            type: "userdata",
-            item: [
-              {
-                itemName: "Stickers",
-                quantity: 3,
-              },
-              {
-                itemName: "Shirts",
-                quantity: 1,
-              },
-            ],
+            matricNumber: user.matricNumber,
+            items: selectedItems.map(item => ({
+              id: item.uniqueKey,
+              itemName: item.itemName,
+              quantity: selectedRewards[item.uniqueKey],
+            })),
+            totalCost: totalCost,
+            // Add any other relevant data for the backend
           },
           {
             redirect: "follow",
             mode: "cors",
             method: "POST",
             headers: {
-              "Content-Type": "text/plain;charset=utf-8",
+              "Content-Type": "application/json", // Usually, the content type for JSON POST requests
             },
           }
         );
@@ -200,7 +187,7 @@ const goHome = () => {
           console.log("Purchase successful:", response.data);
   
           // Deduct points permanently on confirmed purchase
-          setPoints(tentativePoints);
+          setPoints(prevPoints => prevPoints - totalCost);
   
           // Update user's totalSpending
           const updatedTotalSpending = user.totalSpending + totalCost;
