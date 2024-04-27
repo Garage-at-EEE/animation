@@ -6,9 +6,10 @@ import {
   MDBTableHead,
   MDBBtn,
 } from "mdb-react-ui-kit";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 import axios from "axios";
 import "./Profile.css";
+
 
 function Profile({resetLoading}) {
   const [items, setItems] = useState([]);
@@ -19,15 +20,16 @@ function Profile({resetLoading}) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [summaryItems, setSummaryItems] = useState([]);
-
+  
   const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user; // Access user data passed in the state
-  const pointsFromLogin = location.state?.points; 
+  const userPasscode = location.state?.passcode;
+  const pointsFromLogin = location.state?.points;
 
   const updatePointsFromState = () => {
     console.log('Updating points from state:', location.state);
-    const userPoints = location.state?.user?.currentInnocredits;
+    const userPoints = location.state?.user?.currentInnocredit;
     if (userPoints) {
       const numericPoints = Number(userPoints);
       setPoints(numericPoints);
@@ -159,25 +161,28 @@ const goHome = () => {
     if (tentativePoints >= totalCost) {
 
       try {
-        // Use the correct variable name: selectedRewards (with capital R) and item (not iteam)
+        const payload = {
+          matric: user.matricNumber,
+          passcode: userPasscode, // This assumes you have the passcode saved in the user object
+          items: selectedItems.map(item => ({
+            id: item.uniqueKey,
+            itemName: item.itemName,
+            quantity: selectedRewards[item.uniqueKey],
+          })),
+          totalCost: totalCost,
+        };
+  
+        console.log('Sending request with payload:', payload); // Log the payload to verify its structure
+  
         const response = await axios.post(
           "https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec",
-          {
-            matricNumber: user.matricNumber,
-            items: selectedItems.map(item => ({
-              id: item.uniqueKey,
-              itemName: item.itemName,
-              quantity: selectedRewards[item.uniqueKey],
-            })),
-            totalCost: totalCost,
-            // Add any other relevant data for the backend
-          },
+          payload,
           {
             redirect: "follow",
             mode: "cors",
             method: "POST",
             headers: {
-              "Content-Type": "application/json", // Usually, the content type for JSON POST requests
+              "Content-Type": "text/plain;charset=utf-8",
             },
           }
         );
@@ -188,20 +193,7 @@ const goHome = () => {
   
           // Deduct points permanently on confirmed purchase
           setPoints(prevPoints => prevPoints - totalCost);
-  
-          // Update user's totalSpending
-          const updatedTotalSpending = user.totalSpending + totalCost;
-  
-          // Update user's currentInnocredit
-          user.currentInnocredit = tentativePoints; // or use setPoints value
-  
-          // Call your API endpoint to update user's totalSpending and currentInnocredit
-          await axios.post('https://script.google.com/macros/s/AKfycbyZVob9L1HLQh4PO5zbAwL9182lMBnMCF31wgnkUuq3BqMj_es-gnVsOfu601NhRIOq/exec', {
-            matricNumber: user.matricNumber,
-            currentInnocredit: user.currentInnocredit,
-            totalSpending: updatedTotalSpending,
-          });
-  
+
           setSelectedRewards({}); // Reset the selection after purchase
           setShowSummary(false); // Close the summary view
           setSummaryItems([]); // Clear the summary items

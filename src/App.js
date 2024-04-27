@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate} from 'react-router-dom';
+import React, { useState, useEffect} from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import './App.css';
 import { Container, Row, Col, Button, Card, Form, Breadcrumb } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -31,6 +31,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // To track loading state
   const [loginError, setLoginError] = useState('');
 
+  const handlePasscodeChange = (e) => {
+    // Ensure passcode is in the format DDMM (e.g., 1234)
+    const inputPasscode = e.target.value;
+    const formattedPasscode = inputPasscode.replace(/\D/g, '').slice(0, 4); // Only allow digits, max length 4
+    setPasscode(formattedPasscode);
+  };
 
   const resetLoading = () => {
     setIsLoading(false);
@@ -62,7 +68,7 @@ function App() {
 
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "text/plain;charset=utf-8",
       },
       redirect: "follow",
       mode: "cors",
@@ -86,7 +92,11 @@ function App() {
       // Check for successful login response
       if (response.data.status === "DATA RETRIEVAL SUCCESSFUL") {
         // If the data retrieval is successful, navigate to the Profile page
-        navigate('/Profile', { state: { user: response.data.info, points: response.data.info.currentInnocredit } });
+        navigate('/Profile', { 
+          state: { user: response.data.info, 
+          points: response.data.info.currentInnocredit, 
+          passcode: passcode
+        } });
       } else {
         // Handle unsuccessful login
         setLoginError("Wrong username or passcode.")
@@ -168,15 +178,16 @@ function App() {
                       />
                     </Form.Group>
                     <Col md>
-                      <Form.Group controlId="formPassword">
+                      <Form.Group controlId="passcodeInput">
                         <Form.Label>Day of Birth</Form.Label>
                         <Form.Control
                           type="password" // or type="text" if it's not sensitive information
                           placeholder="DDMM"
                           value={passcode}
-                          onChange={(e) => setPasscode(e.target.value)}
+                          onChange={handlePasscodeChange}
                         />
                       </Form.Group>
+            
                     </Col>
 
                       </Row>
@@ -190,10 +201,7 @@ function App() {
                             "Login"
                           )}
                         </Button>
-                        {/* Display error message if login fails */}
-                        {loginError && (
-                          <div style={{ color: 'red', marginTop: '10px' }}>{loginError}</div>
-                        )}
+
                       </Col>
                     </Row>
 
