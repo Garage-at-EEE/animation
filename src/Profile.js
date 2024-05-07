@@ -46,7 +46,7 @@ function Profile({resetLoading}) {
       const userPoints = Number(location.state.user.currentInnocredit);
       if (!isNaN(userPoints)) {
         setPoints(userPoints);
-        setTentativePoints(userPoints);
+        //setTentativePoints(userPoints);
       } else {
         console.error('Invalid points value received from login state.');
       }
@@ -124,12 +124,12 @@ function Profile({resetLoading}) {
     console.log(`Total cost of selected items: ${totalCost}`);
     
     // Check if we have enough points
-    if (tentativePoints >= totalCost) {
+    if (points >= totalCost) {
       // Here you should set summaryItems to include the quantity as well
       setSummaryItems(selectedItems);
-  
+      setShowSummary(true);
       // Deduct points for the tentative state, don't update the actual points yet
-      setTentativePoints(points - totalCost);
+     // setTentativePoints(points - totalCost);
   
       // Show the summary modal
       setShowSummary(true);
@@ -158,18 +158,20 @@ const goHome = () => {
 
     console.log('Tentative points before purchase:', tentativePoints);
 
-    if (tentativePoints >= totalCost) {
+    if (points >= totalCost) {
 
       try {
         const payload = {
           matric: user.matricNumber,
           passcode: userPasscode, // This assumes you have the passcode saved in the user object
-          items: selectedItems.map(item => ({
+          item: selectedItems.map(item => ({
             id: item.uniqueKey,
             itemName: item.itemName,
             quantity: selectedRewards[item.uniqueKey],
           })),
+          type: "purchase",
           totalCost: totalCost,
+          
         };
   
         console.log('Sending request with payload:', payload); // Log the payload to verify its structure
@@ -248,7 +250,7 @@ const goHome = () => {
     className="profile-container table-responsive"
     style={{ color: "white" }}
   >
-    <h3>Profile's Points: {tentativePoints}</h3>
+    <h3>Profile's Points: {points}</h3>
     <MDBTable className="mdb-table">
       <MDBTableHead>
         <tr>

@@ -119,3 +119,17 @@ body{
     font-size: 28px;
     color: #fff;
   }
+
+  
+  .view-switch-button {
+    padding: 5px 10px;
+    margin-left: auto; /* This will push the button to the right */
+    background-color: #596a7c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* ... other styles ... */
+  

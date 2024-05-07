@@ -30,6 +30,16 @@ function App() {
   const [points, setPoints] = useState(0); // Points should be a number
   const [isLoading, setIsLoading] = useState(false); // To track loading state
   const [loginError, setLoginError] = useState('');
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  let appClass = 'app-container';
+  if (isMobileView) {
+    appClass += ' mobile';
+  }
+
+  const toggleView = () => {
+    setIsMobileView(!isMobileView);
+  };
 
   const handlePasscodeChange = (e) => {
     // Ensure passcode is in the format DDMM (e.g., 1234)
@@ -114,8 +124,9 @@ function App() {
  
 
     return (
+      <div className={appClass}>
       <div className="App">
-        <Navbar />
+      <Navbar toggleView={toggleView} isMobileView={isMobileView} />
         <Routes>
         <Route path="/" element={
         <div className="main-content">
@@ -219,6 +230,8 @@ function App() {
             </Routes>
  
         </div>  
+            
+    </div>
     );
 }
 
