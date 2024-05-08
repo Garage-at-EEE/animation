@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.86e3ce73.css",
+    "main.js": "/static/js/main.8691bbb7.js",
+    "static/js/453.f21489fd.chunk.js": "/static/js/453.f21489fd.chunk.js",
+    "static/media/White Garage Logo.png": "/static/media/White Garage Logo.c56d29c781b38c8d35b3.png",
+    "index.html": "/index.html",
+    "main.86e3ce73.css.map": "/static/css/main.86e3ce73.css.map",
+    "main.8691bbb7.js.map": "/static/js/main.8691bbb7.js.map",
+    "453.f21489fd.chunk.js.map": "/static/js/453.f21489fd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.86e3ce73.css",
+    "static/js/main.8691bbb7.js"
+  ]
+}
