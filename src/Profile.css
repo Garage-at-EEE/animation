@@ -69,7 +69,10 @@
 }
 
 .profile-container .btn-purchase:hover {
-  background-color: #6C7D90; /* Lighter shade for hover */
+  width: 100%; /* Ensures the container takes full width */
+  display: block; /* Ensures the container is a block-level element */
+  margin: 0 auto; /* Auto margins for horizontal centering */
+  padding: 1rem;
 }
 
 /* Home button container fixed at the bottom */
@@ -235,4 +238,57 @@
   }
 }
 
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 2rem; /* Adjusted from 5rem to smaller padding */
+    margin-top: 5%;
+  }
+  .profile-container .mdb-table {
+    display: block;
+    width: 100%;
+  }
+
+  .profile-container .mdb-table thead {
+    display: none;
+  }
+
+  .profile-container .mdb-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers content horizontally in flex container */
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff !important; /* Optional: Adds background color for contrast */
+  }
+
+  .profile-container .mdb-table td {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center-align items */
+    justify-content: center; /* Center content vertically */
+    width: 100%; /* Take full width to use all space */
+    padding: 10px;
+    text-align: center; /* Ensure text is centered */
+    font-size: 1.2rem;
+    border: none; /* Removes the bottom border if not needed */
+  }
+
+  .profile-container .mdb-table td:last-child {
+    border-bottom: none;
+  }
+
+  .profile-container .mdb-table img {
+    max-width: 100%; /* Adjust the image size */
+    height: auto;
+    margin-right: 10px;
+  }
+
+  .profile-container .quantity-input {
+    flex-grow: 1; /* Allows the input field to take up remaining space */
+    width: 70%;
+    margin-left: 10px; /* Add some space between the label and the input */
+  }
+}
 

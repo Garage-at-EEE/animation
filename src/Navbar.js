@@ -18,9 +18,6 @@ export default function Navbar() {
                 <li><Link to="/follow-us">Follow Us</Link></li>
                 <li><Link to="/help">Help</Link></li>
             </ul>
-            <button className="view-switch-button" onClick={toggleView}>
-                Switch to {isMobileView ? 'Desktop' : 'Mobile'} View
-            </button>
         </nav>
     );
 }

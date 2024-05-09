@@ -1,26 +1,24 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Link } from 'react-router-dom';
-import './App.css';
-import { Container, Row, Col, Button, Card, Form, Breadcrumb } from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Form, Breadcrumb, Modal } from 'react-bootstrap'; // Correct import of Modal
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import './styles.css';
-import Rewards from './Rewards'; // Import the Rewards component
 import logo from './White Garage Logo.png';
-import { Animator, ScrollContainer, ScrollPage, Sticky, StickyIn, ZoomIn, batch, Fade, FadeIn, MoveOut } from 'react-scroll-motion';
+import Rewards from './Rewards';
 import Profile from './Profile';
-import "./index.css";
 import Navbar from './Navbar';
-import { motion } from "framer-motion";
 import FollowUs from './FollowUs';
-import axios from "axios";
+import { Animator, ScrollContainer, ScrollPage, Sticky, StickyIn, ZoomIn, batch, Fade, FadeIn, MoveOut } from 'react-scroll-motion';
+import { motion } from 'framer-motion';
+import axios from 'axios';
 
-// Then use Zoom in your Animator component
+const ZoomInScrollOut = batch(StickyIn(), FadeIn(), ZoomIn());
 
-const ZoomInScrollOut =batch(StickyIn(),FadeIn(), ZoomIn());
 
 function App() {
   const navigate = useNavigate();
-  const text1 = "Hi, Garage Ambassadors !".split(" ");
+  const text1 = "Hi, Garage Ambassadors!".split(" ");
   const text2 = "Your contribution matters! Swipe down to discover the exciting reward awaiting you.".split(" ");
   const [logoScale, setLogoScale] = useState(1);
   const [contentOpacity, setContentOpacity] = useState(1);
@@ -31,6 +29,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // To track loading state
   const [loginError, setLoginError] = useState('');
   const [isMobileView, setIsMobileView] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   let appClass = 'app-container';
   if (isMobileView) {
@@ -109,19 +108,47 @@ function App() {
         } });
       } else {
         // Handle unsuccessful login
-        setLoginError("Wrong username or passcode.")
+        setLoginError("Wrong username or passcode.");
+        setShowModal(true);
       }
       // ... rest of your existing code
     } catch (error) {
       console.error("Error logging in: ", error);
       setLoginError("An Error occured. Please try again.")
       // Maybe set an error message in state and display it
+      setShowModal(true);
     } finally{
       setIsLoading(false);
     }
   };
   
- 
+  useEffect(() => {
+    const updateFontSize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 768) {
+        // Set smaller font sizes for mobile
+        document.querySelectorAll('.card-text').forEach(el => {
+          el.style.fontSize = '0.8rem'; // Example size
+        });
+        document.querySelectorAll('.card-title').forEach(el => {
+          el.style.fontSize = '1.4rem'; // Example size
+        });
+      } else {
+        // Set larger font sizes for desktop
+        document.querySelectorAll('.card-text').forEach(el => {
+          el.style.fontSize = '1.3rem'; // Example size
+        });
+      }
+    };
+  
+    updateFontSize();
+    window.addEventListener('resize', updateFontSize);
+  
+    return () => {
+      window.removeEventListener('resize', updateFontSize);
+    };
+  }, []);
+  
 
     return (
       <div className={appClass}>
@@ -154,20 +181,30 @@ function App() {
                         animate={{ opacity: contentOpacity }}
                         transition={{ duration: 0.5 }}
                       >
-                        <Card.Title style={{ color: 'white', fontSize: '2.0rem' }}>
-                          {text1.map((el, i) => (
-                            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: i / 10 }} key={i}>
-                              {el}{" "}
-                            </motion.span>
-                          ))}
-                        </Card.Title>
-                        <Card.Text style={{ color: 'white', fontSize: '1.3rem' }}>
-                          {text2.map((el, i) => (
-                            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: i / 10 }} key={i}>
-                              {el}{" "}
-                            </motion.span>
-                          ))}
-                        </Card.Text>
+                      <Card.Title className="card-title">
+                        {text1.map((el, i) => (
+                          <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: i / 10 }}
+                            key={i}
+                          >
+                            {el}{" "}
+                          </motion.span>
+                        ))}
+                      </Card.Title>
+                      <Card.Text className="card-text">
+                        {text2.map((el, i) => (
+                          <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: i / 10 }}
+                            key={i}
+                          >
+                            {el}{" "}
+                          </motion.span>
+                        ))}
+                      </Card.Text>
                       </motion.div>
                     </Card.Body>
                   </Card>
@@ -230,7 +267,16 @@ function App() {
             </Routes>
  
         </div>  
-            
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Login Error</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{loginError}</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+            </Modal.Footer>
+      </Modal>
+
     </div>
     );
 }

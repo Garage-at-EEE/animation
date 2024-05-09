@@ -70,14 +70,6 @@
   flex-grow: 1; /* Allow the text section to grow */
 }
 
-/* Adjustments for responsiveness */
-@media (max-width: 768px) {
-  .flex-shrink-0,
-  .flex-grow-1 {
-    flex: 0 0 100%; /* Make both take full width on smaller screens */
-    max-width: 100%; /* Prevent any exceeding of the width */
-  }
-}
 
 /* Make sure the parent of the button has position: relative */
 .app-container {
@@ -102,28 +94,36 @@
 .view-switch-button:hover {
   background-color: #0056b3; /* Darken button on hover */
 }
+.card-title {
+  color: white;
+  font-size: 2.0rem; /* Default size for desktop */
+}
 
+.card-text {
+  color: white;
+  font-size: 1.3rem; /* Default size for desktop */
+}
 
+/* Media query for screens smaller than 768px */
 @media (max-width: 768px) {
-  .navbar {
-    /* Adjust navbar styling for mobile */
+  .card img {
+    width: 230%;
+    height: auto;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px; /* Optional: adds some space above the image */
+  }
+  .card-title {
+    font-size: 1.3rem; /* Adjust the font size to be smaller */
+  }
+
+  .main-content {
+    padding: 10px; /* Reduce padding for smaller screens */
   }
 
   .card {
-    /* Adjust card styling for mobile */
-    margin: 10px; /* Add some margin around for smaller screens */
-    padding: 20px; /* Increase padding for better readability */
+    padding: 10px; /* Provide some padding inside the card */
+    margin: 10px 0; /* Add top and bottom margin for spacing */
   }
-
-  .App-header {
-    /* Adjust the header for mobile view if necessary */
-    font-size: calc(8px + 2vmin); /* Smaller font size for smaller screens */
-  }
-
-  .App-logo {
-    height: 30vmin; /* Smaller logo for smaller screens */
-  }
-
-  /* Add styles for other elements you want to adjust on mobile here */
 }
-

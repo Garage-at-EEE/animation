@@ -250,7 +250,7 @@ const goHome = () => {
     className="profile-container table-responsive"
     style={{ color: "white" }}
   >
-    <h3>Profile's Points: {points}</h3>
+    <h3>Points: {points} InnoCredits</h3>
     <MDBTable className="mdb-table">
       <MDBTableHead>
         <tr>
@@ -267,7 +267,7 @@ const goHome = () => {
               <img src={reward.image.preview_url} alt={reward.itemName} />
             </td>
             <td>{reward.itemName}</td>
-            <td>{reward.innocreditPrice}</td>
+            <td>{reward.innocreditPrice} pts</td>
             <td>
               <input
                 type="number"
