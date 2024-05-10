@@ -285,10 +285,40 @@
     margin-right: 10px;
   }
 
-  .profile-container .quantity-input {
-    flex-grow: 1; /* Allows the input field to take up remaining space */
-    width: 70%;
-    margin-left: 10px; /* Add some space between the label and the input */
+  .profile-container .quantity-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  
+  .profile-container .increment-decrement-btn {
+    background: #f8f9fa;
+    border: 1px solid #ced4da;
+    color: #495057;
+    padding: 8px 12px; /* Adjust padding to increase tap area */
+    cursor: pointer;
+    font-size: 1.2rem; /* Increase font size for better visibility */
+  }
+  
+  .profile-container .quantity-input {
+    width: 50px; /* Set a fixed width for the input */
+    height: 34px; /* Match the height with buttons */
+    text-align: center;
+    margin: 0 5px; /* Space between buttons and input */
+    border: 1px solid #ced4da;
+    font-size: 1.2rem; /* Increase font size for better readability */
+  }
+  
+  .profile-container .mdb-table td {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .profile-container .mdb-table tbody td:nth-child(4) { /* Adjust this if the column index is different */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
 }
-

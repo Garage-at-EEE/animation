@@ -10,7 +10,6 @@ import { useNavigate, useLocation} from "react-router-dom";
 import axios from "axios";
 import "./Profile.css";
 
-
 function Profile({resetLoading}) {
   const [items, setItems] = useState([]);
   const [points, setPoints] = useState(0);
@@ -110,7 +109,6 @@ function Profile({resetLoading}) {
   
   const handlePurchase = useCallback (() => {
     setIsPurchaseDisabled(true);
-    // Gather selected items with their quantities
      const selectedItems = rewards.map((item) => ({
       ...item,
       quantity: selectedRewards[item.uniqueKey] || 0
@@ -130,9 +128,12 @@ function Profile({resetLoading}) {
       // Here you should set summaryItems to include the quantity as well
       setSummaryItems(selectedItems);
       setShowSummary(true);
+
     } else {
       alert("You do not have enough points for this purchase.");
-      setIsPurchaseDisabled(false);
+      setTimeout(() => {
+        setIsPurchaseDisabled(false);
+      }, 1000); 
     }
   },[points, selectedRewards, rewards]);
   
@@ -151,7 +152,7 @@ const handleCancelPurchase = () => {
 
   const finalizePurchase = async () => {
     setIsConfirmDisabled(true); 
-
+    setIsPurchaseDisabled(true); 
     const selectedItems = rewards.filter(
       (reward) => selectedRewards[reward.uniqueKey]
     );
@@ -195,17 +196,16 @@ const handleCancelPurchase = () => {
         // Check the response status and perform actions accordingly
         if (response.status === 200) {
           console.log("Purchase successful:", response.data);
-          setPoints(prevPoints => prevPoints - totalCost);
-          setSelectedRewards({});
           setShowSummary(false);
-          setSummaryItems([]);
-          setIsConfirmDisabled(false); // Reset confirm button state
-          setIsPurchaseDisabled(false); // Reset purchase button state
-
+          setPoints(prevPoints => {
+            const newPoints = prevPoints - totalCost;
+            localStorage.setItem('points', newPoints.toString());  // Make sure to convert to string for storage
+            return newPoints;
+          });
         } else {
           console.error("Purchase failed:", response.data);
           setIsConfirmDisabled(false);
-          setIsPurchaseDisabled(false);
+          //setIsPurchaseDisabled(false);
 
         }
       } catch (error) {
@@ -219,7 +219,18 @@ const handleCancelPurchase = () => {
       setIsPurchaseDisabled(false); 
     }
   };
-
+  const incrementQuantity = (uniqueKey) => {
+    const currentQuantity = selectedRewards[uniqueKey] || 0;
+    handleQuantityChange(uniqueKey, currentQuantity + 1);
+  };
+  
+  const decrementQuantity = (uniqueKey) => {
+    const currentQuantity = selectedRewards[uniqueKey] || 0;
+    if (currentQuantity > 0) {
+      handleQuantityChange(uniqueKey, currentQuantity - 1);
+    }
+  };
+  
   return (
     <>
       {showSummary && (
@@ -269,22 +280,27 @@ const handleCancelPurchase = () => {
         </tr>
       </MDBTableHead>
       <MDBTableBody>
-        {rewards.map((reward) => (
+      {rewards.map((reward) => (
           <tr key={reward.uniqueKey}>
             <td>
-              <img src={reward.image.preview_url} alt={reward.itemName} />
+              <img src={reward.image.preview_url} alt={reward.itemName} style={{ width: '100px', height: 'auto' }} />
             </td>
             <td>{reward.itemName}</td>
             <td>{reward.innocreditPrice}</td>
             <td>
-              <input
-                type="number"
-                className="quantity-input"
-                min="0"
-                value={selectedRewards[reward.uniqueKey] || 0}
-                onChange={(e) => handleQuantityChange(reward.uniqueKey, e.target.value)}
-              />
+              <div className="quantity-input-group">
+                <button onClick={() => decrementQuantity(reward.uniqueKey)} className="increment-decrement-btn">-</button>
+                <input
+                  type="number"
+                  className="quantity-input"
+                  min="0"
+                  value={selectedRewards[reward.uniqueKey] || 0}
+                  onChange={(e) => handleQuantityChange(reward.uniqueKey, e.target.value)}
+                />
+                <button onClick={() => incrementQuantity(reward.uniqueKey)} className="increment-decrement-btn">+</button>
+              </div>
             </td>
+
           </tr>
         ))}
       </MDBTableBody>
