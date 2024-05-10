@@ -200,6 +200,7 @@ function Profile({ resetLoading }) {
             localStorage.setItem("points", newPoints.toString()); // Make sure to convert to string for storage
             return newPoints;
           });
+          setIsPurchaseDisabled(false);
         } else {
           console.error("Purchase failed:", response.data);
           setIsConfirmDisabled(false);
