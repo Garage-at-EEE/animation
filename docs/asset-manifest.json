@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.4fae8d58.css",
-    "main.js": "/static/js/main.eb1a48b8.js",
+    "main.css": "/static/css/main.397147b4.css",
+    "main.js": "/static/js/main.558519ee.js",
     "static/js/453.f21489fd.chunk.js": "/static/js/453.f21489fd.chunk.js",
     "static/media/White Garage Logo.png": "/static/media/White Garage Logo.c56d29c781b38c8d35b3.png",
     "index.html": "/index.html",
-    "main.4fae8d58.css.map": "/static/css/main.4fae8d58.css.map",
-    "main.eb1a48b8.js.map": "/static/js/main.eb1a48b8.js.map",
+    "main.397147b4.css.map": "/static/css/main.397147b4.css.map",
+    "main.558519ee.js.map": "/static/js/main.558519ee.js.map",
     "453.f21489fd.chunk.js.map": "/static/js/453.f21489fd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4fae8d58.css",
-    "static/js/main.eb1a48b8.js"
+    "static/css/main.397147b4.css",
+    "static/js/main.558519ee.js"
   ]
 }
