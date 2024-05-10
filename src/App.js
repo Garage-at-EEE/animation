@@ -153,7 +153,7 @@ function App() {
     return (
       <div className={appClass}>
       <div className="App">
-      <Navbar toggleView={toggleView} isMobileView={isMobileView} />
+
         <Routes>
         <Route path="/" element={
         <div className="main-content">

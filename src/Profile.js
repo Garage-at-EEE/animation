@@ -20,12 +20,13 @@ function Profile({resetLoading}) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [summaryItems, setSummaryItems] = useState([]);
-  
+  const [isConfirmDisabled, setIsConfirmDisabled] = useState(false); 
+  const [isPurchaseDisabled, setIsPurchaseDisabled] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-  const user = location.state?.user; // Access user data passed in the state
+  const user = location.state?.user;
   const userPasscode = location.state?.passcode;
-  const pointsFromLogin = location.state?.points;
 
   const updatePointsFromState = () => {
     console.log('Updating points from state:', location.state);
@@ -108,6 +109,7 @@ function Profile({resetLoading}) {
   
   
   const handlePurchase = useCallback (() => {
+    setIsPurchaseDisabled(true);
     // Gather selected items with their quantities
      const selectedItems = rewards.map((item) => ({
       ...item,
@@ -124,17 +126,13 @@ function Profile({resetLoading}) {
     console.log(`Total cost of selected items: ${totalCost}`);
     
     // Check if we have enough points
-    if (points >= totalCost) {
+    if (selectedItems.length > 0 && points >= totalCost) {
       // Here you should set summaryItems to include the quantity as well
       setSummaryItems(selectedItems);
       setShowSummary(true);
-      // Deduct points for the tentative state, don't update the actual points yet
-     // setTentativePoints(points - totalCost);
-  
-      // Show the summary modal
-      setShowSummary(true);
     } else {
       alert("You do not have enough points for this purchase.");
+      setIsPurchaseDisabled(false);
     }
   },[points, selectedRewards, rewards]);
   
@@ -145,10 +143,15 @@ const goHome = () => {
   navigate("/");
 };
 
+const handleCancelPurchase = () => {
+  setShowSummary(false);
+  setIsPurchaseDisabled(false);
+  setIsConfirmDisabled(false);
+};
 
   const finalizePurchase = async () => {
-    // Gather selected items
-    
+    setIsConfirmDisabled(true); 
+
     const selectedItems = rewards.filter(
       (reward) => selectedRewards[reward.uniqueKey]
     );
@@ -192,23 +195,28 @@ const goHome = () => {
         // Check the response status and perform actions accordingly
         if (response.status === 200) {
           console.log("Purchase successful:", response.data);
-  
-          // Deduct points permanently on confirmed purchase
           setPoints(prevPoints => prevPoints - totalCost);
+          setSelectedRewards({});
+          setShowSummary(false);
+          setSummaryItems([]);
+          setIsConfirmDisabled(false); // Reset confirm button state
+          setIsPurchaseDisabled(false); // Reset purchase button state
 
-          setSelectedRewards({}); // Reset the selection after purchase
-          setShowSummary(false); // Close the summary view
-          setSummaryItems([]); // Clear the summary items
         } else {
           console.error("Purchase failed:", response.data);
-          // Handle the failed purchase accordingly
+          setIsConfirmDisabled(false);
+          setIsPurchaseDisabled(false);
+
         }
       } catch (error) {
         console.error("Error sending data to the server:", error);
-        // Handle the error accordingly
+        setIsConfirmDisabled(false);
+        setIsPurchaseDisabled(false);
       }
     } else {
       alert("You do not have enough points for this purchase.");
+      setIsConfirmDisabled(false);
+      setIsPurchaseDisabled(false); 
     }
   };
 
@@ -235,8 +243,8 @@ const goHome = () => {
               points
             </div>
 
-            <button onClick={finalizePurchase}>Confirm Purchase</button>
-            <button onClick={() => setShowSummary(false)}>Cancel</button>
+            <button onClick={finalizePurchase} disabled={isConfirmDisabled}>Confirm Purchase</button>
+            <button onClick={handleCancelPurchase}>Cancel</button>
           </div>
         </div>
       )}
@@ -267,7 +275,7 @@ const goHome = () => {
               <img src={reward.image.preview_url} alt={reward.itemName} />
             </td>
             <td>{reward.itemName}</td>
-            <td>{reward.innocreditPrice} pts</td>
+            <td>{reward.innocreditPrice}</td>
             <td>
               <input
                 type="number"
@@ -283,7 +291,7 @@ const goHome = () => {
         </MDBTable>
         <div className="home-button-container">
           <MDBBtn onClick={goHome}>Back Home</MDBBtn>
-          <MDBBtn onClick={handlePurchase}>Purchase</MDBBtn>
+          <MDBBtn onClick={handlePurchase} disabled={isPurchaseDisabled}>Purchase</MDBBtn>
         </div>
       </MDBContainer>
     )}
