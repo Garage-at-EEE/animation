@@ -5,8 +5,8 @@
 
 /* Table header adjustments for a cleaner look */
 .profile-container .mdb-table thead th {
-  background-color: #4E5D6C; /* Maintain the dark header */
-  color: #FFFFFF;
+  background-color: #4e5d6c; /* Maintain the dark header */
+  color: #ffffff;
   border-bottom: 2px solid #707070;
   text-align: center; /* Center align header text */
   font-size: 1.2rem;
@@ -16,14 +16,16 @@
 .profile-container .mdb-table tbody td {
   text-align: center;
   vertical-align: middle;
+
   font-size: 2rem; /* Larger font size for body content */
 }
 /* Adjust the width of the image column to make it smaller */
 .profile-container .mdb-table tbody td:nth-child(2) {
   max-width: 120px; /* Adjust the max width as needed */
   overflow: hidden; /* Hide overflow */
-  white-space: nowrap; /* Prevent text from wrapping */
-  text-overflow: ellipsis; /* Add ellipsis if text is too long */
+  /* white-space: nowrap; Prevent text from wrapping */
+  word-wrap: break-word;
+  text-overflow: ellipsis; /*Add ellipsis if text is too long*/
 }
 /* Styling the checkbox directly for better control */
 /* Ensure checkboxes are centered in the cell */
@@ -33,7 +35,7 @@
 }
 
 .profile-container .mdb-table tbody img {
-  width: 300px !important; 
+  width: 300px !important;
   height: auto !important;
 }
 
@@ -48,17 +50,17 @@
 }
 
 .profile-container .mdb-table tbody tr:nth-child(odd) {
-  background-color: #F5F5F5; /* Lighter shade for alternating rows */
+  background-color: #f5f5f5; /* Lighter shade for alternating rows */
 }
 
 /* Custom checkbox styling */
 .profile-container .checkbox-container input:checked ~ .checkmark {
-  background-color: #4E5D6C; /* Match header color */
+  background-color: #4e5d6c; /* Match header color */
 }
 
 /* Button styling */
 .profile-container .btn-purchase {
-  background-color: #4E5D6C; /* Match header color */
+  background-color: #4e5d6c; /* Match header color */
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -88,7 +90,7 @@
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically if desired */
   min-height: 100vh; /* Ensure it takes at least the full viewport height */
-  color: #4E5D6C; /* Match the color theme */
+  color: #4e5d6c; /* Match the color theme */
   font-weight: bold;
 }
 
@@ -108,7 +110,6 @@
   display: flex;
   align-items: center;
 }
-
 
 /* Backdrop for the modal */
 .purchase-summary-backdrop {
@@ -185,12 +186,12 @@
 }
 
 .purchase-summary-modal button.confirm {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
 .purchase-summary-modal button.confirm:hover {
-  background-color: #45A049;
+  background-color: #45a049;
 }
 
 .purchase-summary-modal button.cancel {
@@ -200,7 +201,7 @@
 }
 
 .purchase-summary-modal button.cancel:hover {
-  background-color: #D32F2F;
+  background-color: #d32f2f;
 }
 
 /* Profile.css */
@@ -227,7 +228,6 @@
   border-radius: 0.25rem; /* Match Bootstrap's default styling */
   cursor: pointer; /* To indicate the buttons are clickable */
 }
-
 
 @keyframes spin {
   0% {
@@ -257,7 +257,7 @@
     flex-direction: column;
     align-items: center; /* Centers content horizontally in flex container */
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 15px;
     background-color: #fff !important; /* Optional: Adds background color for contrast */
