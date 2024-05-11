@@ -292,7 +292,7 @@ function Profile({ resetLoading }) {
                       loading="lazy"
                     />
                   </td>
-                  <td>{reward.itemName}</td>
+                  <td className="itemname">{reward.itemName}</td>
                   <td>{reward.innocreditPrice}</td>
                   <td>
                     <div className="quantity-input-group">
